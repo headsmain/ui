@@ -1,3 +1,4 @@
+-- variables
 	local uis = cloneref(game:GetService("UserInputService"))
 	local players = cloneref(game:GetService("Players"))
 	local ws = cloneref(game:GetService("Workspace"))
@@ -1280,7 +1281,8 @@
 					BorderColor3 = rgb(0, 0, 0),
 					AnchorPoint = vec2(0.5, 0),
 					Position = dim2(0.5, 0, 0, 20),
-					Size = dim2(0, 157, 0, 39),
+					Size = dim2(0, 0, 0, 39),  -- width auto-sized now
+					AutomaticSize = Enum.AutomaticSize.X,  -- auto-fit to buttons
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.outline
 				}); 
@@ -1799,8 +1801,7 @@
 				window.esp_section = column:section({name = "Main"})
 			--  
 
-			-- playerlist completely removed
-			-- (the panel and its associated section/dropdown are gone)
+			-- playerlist: completely removed (both panel and space in dock)
 
 			return setmetatable(window, library)
 		end
@@ -5540,6 +5541,6 @@
 			end 
 						
 			return setmetatable(cfg, library)   
-		end
+		end 
 
 return library, themes;
