@@ -3419,7 +3419,7 @@
 			return setmetatable(cfg, library)
 		end
 
-		-- Enhanced colorpicker with manual RGB/Hex input, Copy/Paste removed
+		-- Enhanced colorpicker with manual RGB/Hex input, Copy/Paste removed, layout fixed
 		function library:colorpicker(options)
 			local parent = self.right_holder
 			
@@ -3485,13 +3485,13 @@
 				})
 			-- 
 
-			-- colorpicker instances - ENLARGED
+			-- colorpicker instances - ENLARGED and layout fixed
 				local colorpicker_holder = library:create("Frame", {
 					Parent = sgui,
 					Name = "colorpicker",
 					Position = dim2(0, colorpicker_button.AbsolutePosition.X + 1, 0, colorpicker_button.AbsolutePosition.Y + 17),
 					BorderColor3 = rgb(0, 0, 0),
-					Size = dim2(0, 240, 0, 340),
+					Size = dim2(0, 240, 0, 360), -- increased height for better fit
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.outline,
 					Visible = false,
@@ -3563,21 +3563,20 @@
 					Name = "main_holder",
 					Position = dim2(0, 0, 0, 20),
 					BorderColor3 = rgb(0, 0, 0),
-					Size = dim2(1, 0, 1, -65),
+					Size = dim2(1, 0, 1, -75), -- more bottom space
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.inline
 				}) library:apply_theme(main_holder, "inline", "BackgroundColor3") 
 				
-				-- Bottom row: only Rainbow toggle now (Copy/Paste removed)
+				-- Bottom row: Rainbow toggle only (moved up a bit)
 				local bottom_row = library:create("Frame", {
 					Parent = window_holder,
 					Name = "bottom_row",
-					Position = dim2(0, 0, 1, -26),
+					Position = dim2(0, 0, 1, -30), -- slightly higher
 					Size = dim2(1, 0, 0, 22),
 					BackgroundTransparency = 1,
 				})
 				
-				-- Rainbow toggle (left aligned)
 				local rainbow_holder = library:create("Frame", {
 					Parent = bottom_row,
 					Name = "rainbow_holder",
@@ -3587,7 +3586,7 @@
 				})
 				local RainbowToggle = setmetatable({right_holder = rainbow_holder, holder = rainbow_holder, __index = library}, library):toggle({name = "Rainbow", flag = cfg.flag .. "_RAINBOW_FLAG"})
 
-				-- Manual color input textbox
+				-- Manual color input textbox at the very bottom
 				local input_holder = library:create("Frame", {
 					Parent = window_holder,
 					Name = "input_holder",
