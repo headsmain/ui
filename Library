@@ -730,6 +730,7 @@
 		
 					library:apply_theme(items.UIGradient, "contrast", "Color") 
 					
+					-- MODIFIED: Center the title text
 					items.text = library:create("TextLabel", {
 						Parent = items.window_holder,
 						Name = "",
@@ -738,9 +739,11 @@
 						BorderColor3 = rgb(0, 0, 0),
 						Text = cfg.name,
 						BackgroundTransparency = 1,
-						Position = dim2(0, 2, 0, 4),
+						Position = dim2(0, 0, 0, 4),
 						BorderSizePixel = 0,
-						AutomaticSize = Enum.AutomaticSize.XY,
+						Size = dim2(1, -30, 0, 0),         -- fill width leaving space for close button
+						AutomaticSize = Enum.AutomaticSize.Y,
+						TextXAlignment = Enum.TextXAlignment.Center,
 						TextSize = 12,
 						BackgroundColor3 = rgb(255, 255, 255)
 					}) library:apply_theme(items.text, "accent", "TextColor3")
@@ -1518,7 +1521,7 @@
 					position = dim2(0.5, 0, 0.5, 0), -- centered
 					image = "rbxassetid://98823308062942",
 				})
-				main_window.items.text.Text = "Pulse.Win"  -- window title
+				main_window.items.text.Text = "Pulse.Win"  -- window title (now centered)
 				main_window.items.sgui.DisplayOrder = 10   -- bring to front
 
 				local items = main_window.items
