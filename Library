@@ -1,3 +1,6 @@
+-- REASON: Dumbass customer put their library in a request and flexed his non existant security and ended up getting it leaked by himself... 😭
+-- The code here is horrendous this is my 2nd library, the added on code was made to suit the old code however I should have just converted to a newer version of my code kind of an oopsie. 
+
 -- variables
 	local uis = cloneref(game:GetService("UserInputService"))
 	local players = cloneref(game:GetService("Players"))
@@ -1281,8 +1284,7 @@
 					BorderColor3 = rgb(0, 0, 0),
 					AnchorPoint = vec2(0.5, 0),
 					Position = dim2(0.5, 0, 0, 20),
-					Size = dim2(0, 0, 0, 39),  -- width auto-sized now
-					AutomaticSize = Enum.AutomaticSize.X,  -- auto-fit to buttons
+					Size = dim2(0, 130, 0, 39), -- fixed width for 4 buttons
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.outline
 				}); 
@@ -1801,7 +1803,7 @@
 				window.esp_section = column:section({name = "Main"})
 			--  
 
-			-- playerlist: completely removed (both panel and space in dock)
+			-- playerlist: completely removed (both panel and dock space)
 
 			return setmetatable(window, library)
 		end
@@ -5542,5 +5544,9 @@
 						
 			return setmetatable(cfg, library)   
 		end 
+
+		-- playerlist function removed entirely
+	-- 
+-- 
 
 return library, themes;
