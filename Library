@@ -3419,7 +3419,7 @@
 			return setmetatable(cfg, library)
 		end
 
-		-- Enhanced colorpicker with manual RGB/Hex input - enlarged, clean layout
+		-- Enhanced colorpicker with manual RGB/Hex input - enlarged window
 		function library:colorpicker(options)
 			local parent = self.right_holder
 			
@@ -3485,13 +3485,13 @@
 				})
 			-- 
 
-			-- colorpicker instances
+			-- colorpicker instances - ENLARGED
 				local colorpicker_holder = library:create("Frame", {
 					Parent = sgui,
 					Name = "colorpicker",
 					Position = dim2(0, colorpicker_button.AbsolutePosition.X + 1, 0, colorpicker_button.AbsolutePosition.Y + 17),
 					BorderColor3 = rgb(0, 0, 0),
-					Size = dim2(0, 240, 0, 300), -- larger width and height
+					Size = dim2(0, 240, 0, 340), -- enlarged vertically
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.outline,
 					Visible = false,
@@ -3563,36 +3563,36 @@
 					Name = "main_holder",
 					Position = dim2(0, 0, 0, 20),
 					BorderColor3 = rgb(0, 0, 0),
-					Size = dim2(1, 0, 1, -60), -- more space for bottom elements
+					Size = dim2(1, 0, 1, -65), -- more bottom space
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.inline
 				}) library:apply_theme(main_holder, "inline", "BackgroundColor3") 
 				
-				-- Bottom row: Rainbow toggle (left) and Copy/Paste buttons (right)
+				-- Bottom row: Rainbow toggle and Copy/Paste buttons
 				local bottom_row = library:create("Frame", {
 					Parent = window_holder,
 					Name = "bottom_row",
-					Position = dim2(0, 0, 1, -24),
-					Size = dim2(1, 0, 0, 20),
+					Position = dim2(0, 0, 1, -26),
+					Size = dim2(1, 0, 0, 22),
 					BackgroundTransparency = 1,
 				})
 				
-				-- Rainbow toggle on the left
+				-- Rainbow toggle (left)
 				local rainbow_holder = library:create("Frame", {
 					Parent = bottom_row,
 					Name = "rainbow_holder",
 					Position = dim2(0, 4, 0, 0),
-					Size = dim2(0, 80, 0, 20),
+					Size = dim2(0, 80, 0, 22),
 					BackgroundTransparency = 1,
 				})
 				local RainbowToggle = setmetatable({right_holder = rainbow_holder, holder = rainbow_holder, __index = library}, library):toggle({name = "Rainbow", flag = cfg.flag .. "_RAINBOW_FLAG"})
 				
-				-- Copy/Paste buttons on the right
+				-- Copy/Paste (right)
 				local button_holder = library:create("Frame", {
 					Parent = bottom_row,
 					Name = "button_holder",
-					Position = dim2(1, -80, 0, 0),
-					Size = dim2(0, 76, 0, 20),
+					Position = dim2(1, -82, 0, 0),
+					Size = dim2(0, 78, 0, 22),
 					BackgroundTransparency = 1,
 				})
 				local button_section = setmetatable({holder = button_holder, current_holder = button_holder, __index = library}, library)
@@ -3611,7 +3611,7 @@
 					Parent = window_holder,
 					Name = "input_holder",
 					Position = dim2(0, 4, 1, -2),
-					Size = dim2(1, -8, 0, 18),
+					Size = dim2(1, -8, 0, 20),
 					BackgroundColor3 = themes.preset.outline,
 					BorderSizePixel = 0,
 				})
@@ -3630,7 +3630,7 @@
 					Parent = input_inline,
 					Position = dim2(0, 1, 0, 1),
 					Size = dim2(1, -2, 1, -2),
-					BackgroundColor3 = themes.preset.high_contrast, -- dark, not blue
+					BackgroundColor3 = themes.preset.high_contrast,
 					BorderSizePixel = 0,
 				})
 				library:apply_theme(input_background, "high_contrast", "BackgroundColor3")
@@ -3651,7 +3651,7 @@
 					ZIndex = 2,
 				})
 
-				-- Function to update the text box when color changes (FIXED: no ToRGB)
+				-- Update input box when color changes
 				local function update_input_text()
 					if input_box then
 						local r = round(cfg.color.r * 255)
@@ -3661,12 +3661,12 @@
 					end
 				end
 
-				-- Parse input on FocusLost (Enter or click away)
+				-- Parse input on FocusLost
 				input_box.FocusLost:Connect(function()
-					local txt = input_box.Text:gsub("%s+", "") -- remove whitespace
+					local txt = input_box.Text:gsub("%s+", "")
 					if txt == "" then return end
 					local parsed = false
-					-- Hex format: #RRGGBB or RRGGBB
+					-- Hex
 					local hex_match = txt:match("^#?([%x%x%x%x%x%x])$")
 					if hex_match then
 						local hex = hex_match
@@ -3677,7 +3677,6 @@
 						parsed = true
 					end
 					if not parsed then
-						-- Try RGB: 255,128,0 or 255 128 0
 						local nums = {}
 						for num in txt:gmatch("%d+") do
 							table.insert(nums, tonumber(num))
@@ -3691,12 +3690,11 @@
 						end
 					end
 					if not parsed then
-						-- If invalid, revert to current color text
 						update_input_text()
 					end
 				end)
 
-				-- The rest of the colorpicker UI (sat/val picker, hue slider, etc.)
+				-- The rest of the colorpicker UI (sat/val, hue, alpha)
 				local main_holder_inline = library:create("Frame", {
 					Parent = main_holder,
 					Name = "main_holder_inline",
