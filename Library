@@ -221,23 +221,8 @@
 		makefolder(library.directory .. path)
 	end 
 
-	writefile("ffff.ttf", game:HttpGet("https://github.com/weasely111/beta/raw/refs/heads/main/fs-tahoma-8px.ttf"))
-
-	local tahoma = {
-		name = "SmallestPixel7",
-		faces = {
-			{
-				name = "Regular",
-				weight = 400,
-				style = "normal",
-				assetId = getcustomasset("ffff.ttf")
-			}
-		}
-	}
-
-	writefile("dddd.ttf", http_service:JSONEncode(tahoma))
-
-	library.font = Font.new(getcustomasset("dddd.ttf"), Enum.FontWeight.Regular)
+	-- Use Linoria's font (Code) instead of custom TTF
+	library.font = Font.new("rbxasset://fonts/families/Code.json", Enum.FontWeight.Regular)
 
 	local config_holder 
 -- 
@@ -1284,8 +1269,7 @@
 					BorderColor3 = rgb(0, 0, 0),
 					AnchorPoint = vec2(0.5, 0),
 					Position = dim2(0.5, 0, 0, 20),
-					Size = dim2(0, 0, 0, 39),  -- width auto-sized now
-					AutomaticSize = Enum.AutomaticSize.X,  -- auto-fit to buttons
+					Size = dim2(0, 130, 0, 39),
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.outline
 				}); 
@@ -1528,11 +1512,14 @@
 
 			-- main window
 				local main_window = library:panel({
-					name = properties and properties.name or "Atlanta | ", 
+					name = "Main",  -- tooltip says "Main"
 					size = dim2(0, 604, 0, 628),
-					position = dim2(0, (camera.ViewportSize.X / 2) - 302 - 96, 0, (camera.ViewportSize.Y / 2) - 421 - 12),
+					anchor_point = vec2(0.5, 0.5),  -- center anchor
+					position = dim2(0.5, 0, 0.5, 0), -- centered
 					image = "rbxassetid://98823308062942",
 				})
+				main_window.items.text.Text = "Pulse.Win"  -- window title
+				main_window.items.sgui.DisplayOrder = 10   -- bring to front
 
 				local items = main_window.items
 
@@ -1624,7 +1611,7 @@
 				library:make_resizable(items.main_holder) 
 			-- 
 
-			-- theming 
+			-- theming (Style panel) - closed by default
 				local style = library:panel({
 					name = "Style", 
 					anchor_point = vec2(0, 0),
@@ -1632,6 +1619,7 @@
 					position = dim2(0, main_window.items.main_holder.AbsolutePosition.X + main_window.items.main_holder.AbsoluteSize.X + 2, 0, main_window.items.main_holder.AbsolutePosition.Y),
 					image = "rbxassetid://115194686863276",
 				})
+				style.items.sgui.Enabled = false   -- closed by default
 
 				local watermark = library:watermark({default = os.date('Atlanta |  - %b %d %Y - %H:%M:%S')})  
 
@@ -1729,15 +1717,16 @@
 				section:slider({name = "Max Players", flag = "max_players", min = 0, max = 40, default = 15, interval = 1})
 			-- 
 
-			-- cfg holder
-				local holder = library:panel({
+			-- Configurations panel - closed by default
+				local config_panel = library:panel({
 					name = "Configurations", 
 					size = dim2(0, 324, 0, 410),
 					position = dim2(0, items.main_holder.AbsolutePosition.X + items.main_holder.AbsoluteSize.X + 2, 0, items.main_holder.AbsolutePosition.Y),
 					image = "rbxassetid://105199726008012",
 				}) 
+				config_panel.items.sgui.Enabled = false
 
-				local items = holder.items
+				local items = config_panel.items
 
 				getgenv().load_config = function(name)
 					library:load_config(readfile(library.directory .. "/configs/" .. name .. ".cfg"))
@@ -1789,22 +1778,23 @@
 					end})
 			-- 
 					
-			-- esp preview
-				local holder = library:panel({
+			-- ESP Preview - stays open, placed top-left, behind main UI
+				local esp_preview_panel = library:panel({
 					name = "ESP Preview", 
 					anchor_point = vec2(0, 0),
 					size = dim2(0, 300, 0, 325),
-					position = dim2(0, style.items.main_holder.AbsolutePosition.X, 0, style.items.main_holder.AbsolutePosition.Y + style.items.main_holder.AbsoluteSize.Y + 2),
+					position = dim2(0, 10, 0, 10), -- top-left with offset
 					image = "rbxassetid://77684377836328",
 				})  
-				
-				local items = holder.items
+				esp_preview_panel.items.sgui.DisplayOrder = 1   -- behind main window
+
+				local items = esp_preview_panel.items
 				
 				local column = setmetatable(items, library):column() 
 				window.esp_section = column:section({name = "Main"})
 			--  
 
-			-- playerlist: completely removed (both panel and space in dock)
+			-- playerlist: completely removed
 
 			return setmetatable(window, library)
 		end
@@ -3429,13 +3419,14 @@
 			return setmetatable(cfg, library)
 		end
 		
+		-- Enhanced colorpicker with manual RGB/Hex input
 		function library:colorpicker(options)
 			local parent = self.right_holder
 			
 			local cfg = {
 				name = options.name or "Color", 
 				flag = options.flag or tostring(2^789),
-				color = options.color or color(1, 1, 1), -- Default to white color if not provided
+				color = options.color or color(1, 1, 1),
 				alpha = options.alpha or 1,
 				callback = options.callback or function() end,
 				right_holder = self.right_holder,
@@ -3500,7 +3491,7 @@
 					Name = "colorpicker",
 					Position = dim2(0, colorpicker_button.AbsolutePosition.X + 1, 0, colorpicker_button.AbsolutePosition.Y + 17),
 					BorderColor3 = rgb(0, 0, 0),
-					Size = dim2(0, 190, 0, 210),
+					Size = dim2(0, 190, 0, 240),
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.outline,
 					Visible = false,
@@ -3608,6 +3599,96 @@
 					RainbowToggle.set(library.is_rainbow)
 					cfg.set(library.copied_flag.Color, library.copied_flag.Transparency)
 				end})
+
+				-- Manual color input textbox
+				local input_holder = library:create("Frame", {
+					Parent = colorpicker_holder,
+					Name = "input_holder",
+					Position = dim2(0, 4, 1, -24),
+					Size = dim2(1, -8, 0, 20),
+					BackgroundColor3 = themes.preset.outline,
+					BorderSizePixel = 0,
+				})
+				library:apply_theme(input_holder, "outline", "BackgroundColor3")
+				
+				local input_inline = library:create("Frame", {
+					Parent = input_holder,
+					Position = dim2(0, 1, 0, 1),
+					Size = dim2(1, -2, 1, -2),
+					BackgroundColor3 = themes.preset.inline,
+					BorderSizePixel = 0,
+				})
+				library:apply_theme(input_inline, "inline", "BackgroundColor3")
+				
+				local input_background = library:create("Frame", {
+					Parent = input_inline,
+					Position = dim2(0, 1, 0, 1),
+					Size = dim2(1, -2, 1, -2),
+					BackgroundColor3 = themes.preset.accent,
+					BorderSizePixel = 0,
+				})
+				library:apply_theme(input_background, "accent", "BackgroundColor3")
+				
+				local input_box = library:create("TextBox", {
+					Parent = input_background,
+					FontFace = library.font,
+					TextColor3 = themes.preset.text,
+					BorderColor3 = rgb(0, 0, 0),
+					Text = "",
+					PlaceholderText = "#RRGGBB or 255,255,255",
+					Size = dim2(1, 0, 1, 0),
+					BackgroundTransparency = 1,
+					TextXAlignment = Enum.TextXAlignment.Left,
+					TextTruncate = Enum.TextTruncate.AtEnd,
+					ClearTextOnFocus = false,
+					TextSize = 12,
+					ZIndex = 2,
+				})
+
+				-- Function to update the text box when color changes (FIXED: no ToRGB)
+				local function update_input_text()
+					if input_box then
+						local r = round(cfg.color.r * 255)
+						local g = round(cfg.color.g * 255)
+						local b = round(cfg.color.b * 255)
+						input_box.Text = string.format("#%02X%02X%02X", r, g, b)
+					end
+				end
+
+				-- Parse input on FocusLost (Enter or click away)
+				input_box.FocusLost:Connect(function()
+					local txt = input_box.Text:gsub("%s+", "") -- remove whitespace
+					if txt == "" then return end
+					local parsed = false
+					-- Hex format: #RRGGBB or RRGGBB
+					local hex_match = txt:match("^#?([%x%x%x%x%x%x])$")
+					if hex_match then
+						local hex = hex_match
+						local r = tonumber(hex:sub(1,2), 16) or 0
+						local g = tonumber(hex:sub(3,4), 16) or 0
+						local b = tonumber(hex:sub(5,6), 16) or 0
+						cfg.set(Color3.fromRGB(r, g, b), cfg.alpha)
+						parsed = true
+					end
+					if not parsed then
+						-- Try RGB: 255,128,0 or 255 128 0
+						local nums = {}
+						for num in txt:gmatch("%d+") do
+							table.insert(nums, tonumber(num))
+						end
+						if #nums >= 3 then
+							local r = math.clamp(nums[1], 0, 255)
+							local g = math.clamp(nums[2], 0, 255)
+							local b = math.clamp(nums[3], 0, 255)
+							cfg.set(Color3.fromRGB(r, g, b), cfg.alpha)
+							parsed = true
+						end
+					end
+					if not parsed then
+						-- If invalid, revert to current color text
+						update_input_text()
+					end
+				end)
 
 				local main_holder_inline = library:create("Frame", {
 					Parent = main_holder,
@@ -3941,6 +4022,9 @@
 				flags[cfg.flag]["Transparency"] = a
 			
 				cfg.callback(Color, a)
+
+				-- Update the input text box
+				update_input_text()
 			end
 
 			function cfg.update_color() 
