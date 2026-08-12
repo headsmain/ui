@@ -3419,7 +3419,7 @@
 			return setmetatable(cfg, library)
 		end
 
-		-- Enhanced colorpicker with manual RGB/Hex input - fixed layout & background
+		-- Enhanced colorpicker with manual RGB/Hex input - enlarged, clean layout
 		function library:colorpicker(options)
 			local parent = self.right_holder
 			
@@ -3491,7 +3491,7 @@
 					Name = "colorpicker",
 					Position = dim2(0, colorpicker_button.AbsolutePosition.X + 1, 0, colorpicker_button.AbsolutePosition.Y + 17),
 					BorderColor3 = rgb(0, 0, 0),
-					Size = dim2(0, 190, 0, 260), -- increased height
+					Size = dim2(0, 240, 0, 300), -- larger width and height
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.outline,
 					Visible = false,
@@ -3563,31 +3563,38 @@
 					Name = "main_holder",
 					Position = dim2(0, 0, 0, 20),
 					BorderColor3 = rgb(0, 0, 0),
-					Size = dim2(1, 0, 1, -40),
+					Size = dim2(1, 0, 1, -60), -- more space for bottom elements
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.inline
 				}) library:apply_theme(main_holder, "inline", "BackgroundColor3") 
 				
-				-- Rainbow toggle
+				-- Bottom row: Rainbow toggle (left) and Copy/Paste buttons (right)
+				local bottom_row = library:create("Frame", {
+					Parent = window_holder,
+					Name = "bottom_row",
+					Position = dim2(0, 0, 1, -24),
+					Size = dim2(1, 0, 0, 20),
+					BackgroundTransparency = 1,
+				})
+				
+				-- Rainbow toggle on the left
 				local rainbow_holder = library:create("Frame", {
-					Parent = colorpicker_holder,
+					Parent = bottom_row,
 					Name = "rainbow_holder",
-					Position = dim2(0, 4, 1, -48),
-					Size = dim2(0, 80, 0, 18),
+					Position = dim2(0, 4, 0, 0),
+					Size = dim2(0, 80, 0, 20),
 					BackgroundTransparency = 1,
 				})
-				
 				local RainbowToggle = setmetatable({right_holder = rainbow_holder, holder = rainbow_holder, __index = library}, library):toggle({name = "Rainbow", flag = cfg.flag .. "_RAINBOW_FLAG"})
-
-				-- Copy/Paste buttons
+				
+				-- Copy/Paste buttons on the right
 				local button_holder = library:create("Frame", {
-					Parent = colorpicker_holder,
+					Parent = bottom_row,
 					Name = "button_holder",
-					Position = dim2(1, -82, 1, -48),
-					Size = dim2(0, 78, 0, 18),
+					Position = dim2(1, -80, 0, 0),
+					Size = dim2(0, 76, 0, 20),
 					BackgroundTransparency = 1,
 				})
-				
 				local button_section = setmetatable({holder = button_holder, current_holder = button_holder, __index = library}, library)
 				button_section:button_holder({})
 				button_section:button({name = "Copy", callback = function()
@@ -3601,10 +3608,10 @@
 
 				-- Manual color input textbox
 				local input_holder = library:create("Frame", {
-					Parent = colorpicker_holder,
+					Parent = window_holder,
 					Name = "input_holder",
-					Position = dim2(0, 4, 1, -24),
-					Size = dim2(1, -8, 0, 20),
+					Position = dim2(0, 4, 1, -2),
+					Size = dim2(1, -8, 0, 18),
 					BackgroundColor3 = themes.preset.outline,
 					BorderSizePixel = 0,
 				})
@@ -3689,6 +3696,7 @@
 					end
 				end)
 
+				-- The rest of the colorpicker UI (sat/val picker, hue slider, etc.)
 				local main_holder_inline = library:create("Frame", {
 					Parent = main_holder,
 					Name = "main_holder_inline",
