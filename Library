@@ -748,15 +748,16 @@
 						BackgroundColor3 = rgb(255, 255, 255)
 					}) library:apply_theme(items.text, "accent", "TextColor3")
 					
-					-- NEW: Rivals text on the right, before the X button
+					-- FIXED: Rivals text with right anchor
 					items.rivals_text = library:create("TextLabel", {
-						Parent = items.main_holder, -- same parent as Close button
+						Parent = items.main_holder,
 						Name = "",
 						FontFace = library.font,
 						TextColor3 = themes.preset.accent,
 						BorderColor3 = rgb(0, 0, 0),
 						Text = "Rivals",
 						BackgroundTransparency = 1,
+						AnchorPoint = Vector2.new(1, 0),
 						Position = dim2(1, -25, 0, 4),
 						BorderSizePixel = 0,
 						Size = dim2(0, 0, 0, 0),
