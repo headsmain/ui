@@ -3418,8 +3418,8 @@
 
 			return setmetatable(cfg, library)
 		end
-		
-		-- Enhanced colorpicker with manual RGB/Hex input
+
+		-- Enhanced colorpicker with manual RGB/Hex input - fixed layout & background
 		function library:colorpicker(options)
 			local parent = self.right_holder
 			
@@ -3491,7 +3491,7 @@
 					Name = "colorpicker",
 					Position = dim2(0, colorpicker_button.AbsolutePosition.X + 1, 0, colorpicker_button.AbsolutePosition.Y + 17),
 					BorderColor3 = rgb(0, 0, 0),
-					Size = dim2(0, 190, 0, 240),
+					Size = dim2(0, 190, 0, 260), -- increased height
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.outline,
 					Visible = false,
@@ -3568,34 +3568,33 @@
 					BackgroundColor3 = themes.preset.inline
 				}) library:apply_theme(main_holder, "inline", "BackgroundColor3") 
 				
-				cfg.holder = library:create( "Frame" , {
-					Parent = colorpicker_holder;
-					Name = "\0";
-					Position = dim2(0, 6, 1, -21);
-					BorderColor3 = rgb(0, 0, 0);
-					Size = dim2(1, -120, 0, 0);
-					BorderSizePixel = 0;
-				});
+				-- Rainbow toggle
+				local rainbow_holder = library:create("Frame", {
+					Parent = colorpicker_holder,
+					Name = "rainbow_holder",
+					Position = dim2(0, 4, 1, -48),
+					Size = dim2(0, 80, 0, 18),
+					BackgroundTransparency = 1,
+				})
 				
-				local RainbowToggle = setmetatable(cfg, library):toggle({name = "Rainbow", flag = cfg.flag .. "_RAINBOW_FLAG"})
+				local RainbowToggle = setmetatable({right_holder = rainbow_holder, holder = rainbow_holder, __index = library}, library):toggle({name = "Rainbow", flag = cfg.flag .. "_RAINBOW_FLAG"})
 
-				cfg.holder = library:create( "Frame" , {
-					Parent = colorpicker_holder;
-					Name = "\0";
-					Position = dim2(1, 2, 1, -23);
-					BorderColor3 = rgb(0, 0, 0);
-					AnchorPoint = vec2(1, 0);
-					Size = dim2(1, -80, 0, 0);
-					BorderSizePixel = 0;
-				});
+				-- Copy/Paste buttons
+				local button_holder = library:create("Frame", {
+					Parent = colorpicker_holder,
+					Name = "button_holder",
+					Position = dim2(1, -82, 1, -48),
+					Size = dim2(0, 78, 0, 18),
+					BackgroundTransparency = 1,
+				})
 				
-				local section = setmetatable(cfg, library)
-				section:button_holder({})
-				section:button({name = "Copy", callback = function()
+				local button_section = setmetatable({holder = button_holder, current_holder = button_holder, __index = library}, library)
+				button_section:button_holder({})
+				button_section:button({name = "Copy", callback = function()
 					library.copied_flag = flags[cfg.flag]
 					library.is_rainbow = cfg.flag .. "_RAINBOW_FLAG"
 				end})
-				section:button({name = "Paste", callback = function()
+				button_section:button({name = "Paste", callback = function()
 					RainbowToggle.set(library.is_rainbow)
 					cfg.set(library.copied_flag.Color, library.copied_flag.Transparency)
 				end})
@@ -3624,10 +3623,10 @@
 					Parent = input_inline,
 					Position = dim2(0, 1, 0, 1),
 					Size = dim2(1, -2, 1, -2),
-					BackgroundColor3 = themes.preset.accent,
+					BackgroundColor3 = themes.preset.high_contrast, -- dark, not blue
 					BorderSizePixel = 0,
 				})
-				library:apply_theme(input_background, "accent", "BackgroundColor3")
+				library:apply_theme(input_background, "high_contrast", "BackgroundColor3")
 				
 				local input_box = library:create("TextBox", {
 					Parent = input_background,
