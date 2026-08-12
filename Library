@@ -3419,7 +3419,7 @@
 			return setmetatable(cfg, library)
 		end
 
-		-- Enhanced colorpicker with manual RGB/Hex input - enlarged window
+		-- Enhanced colorpicker with manual RGB/Hex input, Copy/Paste removed
 		function library:colorpicker(options)
 			local parent = self.right_holder
 			
@@ -3491,7 +3491,7 @@
 					Name = "colorpicker",
 					Position = dim2(0, colorpicker_button.AbsolutePosition.X + 1, 0, colorpicker_button.AbsolutePosition.Y + 17),
 					BorderColor3 = rgb(0, 0, 0),
-					Size = dim2(0, 240, 0, 340), -- enlarged vertically
+					Size = dim2(0, 240, 0, 340),
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.outline,
 					Visible = false,
@@ -3563,12 +3563,12 @@
 					Name = "main_holder",
 					Position = dim2(0, 0, 0, 20),
 					BorderColor3 = rgb(0, 0, 0),
-					Size = dim2(1, 0, 1, -65), -- more bottom space
+					Size = dim2(1, 0, 1, -65),
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.inline
 				}) library:apply_theme(main_holder, "inline", "BackgroundColor3") 
 				
-				-- Bottom row: Rainbow toggle and Copy/Paste buttons
+				-- Bottom row: only Rainbow toggle now (Copy/Paste removed)
 				local bottom_row = library:create("Frame", {
 					Parent = window_holder,
 					Name = "bottom_row",
@@ -3577,7 +3577,7 @@
 					BackgroundTransparency = 1,
 				})
 				
-				-- Rainbow toggle (left)
+				-- Rainbow toggle (left aligned)
 				local rainbow_holder = library:create("Frame", {
 					Parent = bottom_row,
 					Name = "rainbow_holder",
@@ -3586,25 +3586,6 @@
 					BackgroundTransparency = 1,
 				})
 				local RainbowToggle = setmetatable({right_holder = rainbow_holder, holder = rainbow_holder, __index = library}, library):toggle({name = "Rainbow", flag = cfg.flag .. "_RAINBOW_FLAG"})
-				
-				-- Copy/Paste (right)
-				local button_holder = library:create("Frame", {
-					Parent = bottom_row,
-					Name = "button_holder",
-					Position = dim2(1, -82, 0, 0),
-					Size = dim2(0, 78, 0, 22),
-					BackgroundTransparency = 1,
-				})
-				local button_section = setmetatable({holder = button_holder, current_holder = button_holder, __index = library}, library)
-				button_section:button_holder({})
-				button_section:button({name = "Copy", callback = function()
-					library.copied_flag = flags[cfg.flag]
-					library.is_rainbow = cfg.flag .. "_RAINBOW_FLAG"
-				end})
-				button_section:button({name = "Paste", callback = function()
-					RainbowToggle.set(library.is_rainbow)
-					cfg.set(library.copied_flag.Color, library.copied_flag.Transparency)
-				end})
 
 				-- Manual color input textbox
 				local input_holder = library:create("Frame", {
