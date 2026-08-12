@@ -3416,6 +3416,7 @@
 			return setmetatable(cfg, library)
 		end
 		
+		-- Enhanced colorpicker with manual RGB/Hex input
 		function library:colorpicker(options)
 			local parent = self.right_holder
 			
@@ -3487,7 +3488,7 @@
 					Name = "colorpicker",
 					Position = dim2(0, colorpicker_button.AbsolutePosition.X + 1, 0, colorpicker_button.AbsolutePosition.Y + 17),
 					BorderColor3 = rgb(0, 0, 0),
-					Size = dim2(0, 190, 0, 210),
+					Size = dim2(0, 190, 0, 240), -- increased height for input box
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.outline,
 					Visible = false,
@@ -3595,6 +3596,94 @@
 					RainbowToggle.set(library.is_rainbow)
 					cfg.set(library.copied_flag.Color, library.copied_flag.Transparency)
 				end})
+
+				-- Manual color input textbox
+				local input_holder = library:create("Frame", {
+					Parent = colorpicker_holder,
+					Name = "input_holder",
+					Position = dim2(0, 4, 1, -24),
+					Size = dim2(1, -8, 0, 20),
+					BackgroundColor3 = themes.preset.outline,
+					BorderSizePixel = 0,
+				})
+				library:apply_theme(input_holder, "outline", "BackgroundColor3")
+				
+				local input_inline = library:create("Frame", {
+					Parent = input_holder,
+					Position = dim2(0, 1, 0, 1),
+					Size = dim2(1, -2, 1, -2),
+					BackgroundColor3 = themes.preset.inline,
+					BorderSizePixel = 0,
+				})
+				library:apply_theme(input_inline, "inline", "BackgroundColor3")
+				
+				local input_background = library:create("Frame", {
+					Parent = input_inline,
+					Position = dim2(0, 1, 0, 1),
+					Size = dim2(1, -2, 1, -2),
+					BackgroundColor3 = themes.preset.accent,
+					BorderSizePixel = 0,
+				})
+				library:apply_theme(input_background, "accent", "BackgroundColor3")
+				
+				local input_box = library:create("TextBox", {
+					Parent = input_background,
+					FontFace = library.font,
+					TextColor3 = themes.preset.text,
+					BorderColor3 = rgb(0, 0, 0),
+					Text = "",
+					PlaceholderText = "#RRGGBB or 255,255,255",
+					Size = dim2(1, 0, 1, 0),
+					BackgroundTransparency = 1,
+					TextXAlignment = Enum.TextXAlignment.Left,
+					TextTruncate = Enum.TextTruncate.AtEnd,
+					ClearTextOnFocus = false,
+					TextSize = 12,
+					ZIndex = 2,
+				})
+
+				-- Function to update the text box when color changes
+				local function update_input_text()
+					if input_box then
+						local r, g, b = cfg.color:ToRGB()
+						input_box.Text = string.format("#%02X%02X%02X", r, g, b)
+					end
+				end
+
+				-- Parse input on FocusLost (Enter or click away)
+				input_box.FocusLost:Connect(function()
+					local txt = input_box.Text:gsub("%s+", "") -- remove whitespace
+					if txt == "" then return end
+					local parsed = false
+					-- Hex format: #RRGGBB or RRGGBB
+					local hex_match = txt:match("^#?([%x%x%x%x%x%x])$")
+					if hex_match then
+						local hex = hex_match
+						local r = tonumber(hex:sub(1,2), 16) or 0
+						local g = tonumber(hex:sub(3,4), 16) or 0
+						local b = tonumber(hex:sub(5,6), 16) or 0
+						cfg.set(Color3.fromRGB(r, g, b), cfg.alpha)
+						parsed = true
+					end
+					if not parsed then
+						-- Try RGB: 255,128,0 or 255 128 0
+						local nums = {}
+						for num in txt:gmatch("%d+") do
+							table.insert(nums, tonumber(num))
+						end
+						if #nums >= 3 then
+							local r = math.clamp(nums[1], 0, 255)
+							local g = math.clamp(nums[2], 0, 255)
+							local b = math.clamp(nums[3], 0, 255)
+							cfg.set(Color3.fromRGB(r, g, b), cfg.alpha)
+							parsed = true
+						end
+					end
+					if not parsed then
+						-- If invalid, revert to current color text
+						update_input_text()
+					end
+				end)
 
 				local main_holder_inline = library:create("Frame", {
 					Parent = main_holder,
@@ -3928,6 +4017,9 @@
 				flags[cfg.flag]["Transparency"] = a
 			
 				cfg.callback(Color, a)
+
+				-- Update the input text box
+				update_input_text()
 			end
 
 			function cfg.update_color() 
