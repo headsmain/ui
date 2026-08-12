@@ -1281,7 +1281,7 @@
 					BorderColor3 = rgb(0, 0, 0),
 					AnchorPoint = vec2(0.5, 0),
 					Position = dim2(0.5, 0, 0, 20),
-					Size = dim2(0, 130, 0, 39), -- fixed width for 4 buttons
+					Size = dim2(0, 130, 0, 39),
 					BorderSizePixel = 0,
 					BackgroundColor3 = themes.preset.outline
 				}); 
@@ -1526,10 +1526,12 @@
 				local main_window = library:panel({
 					name = "Main",  -- tooltip says "Main"
 					size = dim2(0, 604, 0, 628),
-					position = dim2(0, (camera.ViewportSize.X / 2) - 302 - 96, 0, (camera.ViewportSize.Y / 2) - 421 - 12),
+					anchor_point = vec2(0.5, 0.5),  -- center anchor
+					position = dim2(0.5, 0, 0.5, 0), -- centered
 					image = "rbxassetid://98823308062942",
 				})
 				main_window.items.text.Text = "Pulse.Win"  -- window title
+				main_window.items.sgui.DisplayOrder = 10   -- bring to front
 
 				local items = main_window.items
 
@@ -1788,15 +1790,15 @@
 					end})
 			-- 
 					
-			-- ESP Preview - stays open (default)
+			-- ESP Preview - stays open, placed top-left, behind main UI
 				local esp_preview_panel = library:panel({
 					name = "ESP Preview", 
 					anchor_point = vec2(0, 0),
 					size = dim2(0, 300, 0, 325),
-					position = dim2(0, style.items.main_holder.AbsolutePosition.X, 0, style.items.main_holder.AbsolutePosition.Y + style.items.main_holder.AbsoluteSize.Y + 2),
+					position = dim2(0, 10, 0, 10), -- top-left with offset
 					image = "rbxassetid://77684377836328",
 				})  
-				-- remains enabled (true)
+				esp_preview_panel.items.sgui.DisplayOrder = 1   -- behind main window
 
 				local items = esp_preview_panel.items
 				
