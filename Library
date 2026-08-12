@@ -741,12 +741,31 @@
 						BackgroundTransparency = 1,
 						Position = dim2(0, 0, 0, 4),
 						BorderSizePixel = 0,
-						Size = dim2(1, -30, 0, 0),         -- fill width leaving space for close button
+						Size = dim2(1, -30, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
 						TextXAlignment = Enum.TextXAlignment.Center,
 						TextSize = 12,
 						BackgroundColor3 = rgb(255, 255, 255)
 					}) library:apply_theme(items.text, "accent", "TextColor3")
+					
+					-- NEW: Rivals text on the right, before the X button
+					items.rivals_text = library:create("TextLabel", {
+						Parent = items.main_holder, -- same parent as Close button
+						Name = "",
+						FontFace = library.font,
+						TextColor3 = themes.preset.accent,
+						BorderColor3 = rgb(0, 0, 0),
+						Text = "Rivals",
+						BackgroundTransparency = 1,
+						Position = dim2(1, -25, 0, 4),
+						BorderSizePixel = 0,
+						Size = dim2(0, 0, 0, 0),
+						AutomaticSize = Enum.AutomaticSize.XY,
+						TextXAlignment = Enum.TextXAlignment.Right,
+						TextSize = 12,
+						ZIndex = 100,
+						BackgroundColor3 = rgb(255, 255, 255)
+					}) library:apply_theme(items.rivals_text, "accent", "TextColor3")
 					
 					items.UIStroke = library:create("UIStroke", {
 						Parent = items.text,
