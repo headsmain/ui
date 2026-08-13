@@ -327,17 +327,19 @@
 			end)
 		end
 
-		-- FIXED draggify: uses GuiService:GetScreenSize() and absolute positions
+		-- FIXED draggify: works with any AnchorPoint
 		function library:draggify(frame)
 			local dragging = false 
 			local startMousePos
-			local startAbsPos
+			local startAbsPos   -- top-left corner
+			local startSize     -- absolute size
 
 			frame.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then
 					dragging = true
 					startMousePos = input.Position
 					startAbsPos = frame.AbsolutePosition
+					startSize = frame.AbsoluteSize
 
 					if library.current_element_open then 
 						library.current_element_open.set_visible(false)
@@ -362,9 +364,14 @@
 				if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
 					local screenSize = game:GetService("GuiService"):GetScreenSize()
 					local delta = input.Position - startMousePos
-					local newX = math.clamp(startAbsPos.X + delta.X, 0, screenSize.X - frame.AbsoluteSize.X)
-					local newY = math.clamp(startAbsPos.Y + delta.Y, 0, screenSize.Y - frame.AbsoluteSize.Y)
-					frame.Position = UDim2.new(0, newX, 0, newY)
+
+					local newTopLeftX = math.clamp(startAbsPos.X + delta.X, 0, screenSize.X - startSize.X)
+					local newTopLeftY = math.clamp(startAbsPos.Y + delta.Y, 0, screenSize.Y - startSize.Y)
+
+					local anchor = frame.AnchorPoint
+					local posX = newTopLeftX + startSize.X * anchor.X
+					local posY = newTopLeftY + startSize.Y * anchor.Y
+					frame.Position = UDim2.new(0, posX, 0, posY)
 				end
 			end)
 		end
