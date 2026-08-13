@@ -327,16 +327,17 @@
 			end)
 		end
 
+		-- FIXED draggify: uses GuiService:GetScreenSize() and absolute positions
 		function library:draggify(frame)
 			local dragging = false 
-			local start_size = frame.Position
-			local start 
+			local startMousePos
+			local startAbsPos
 
 			frame.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then
 					dragging = true
-					start = input.Position
-					start_size = frame.Position
+					startMousePos = input.Position
+					startAbsPos = frame.AbsolutePosition
 
 					if library.current_element_open then 
 						library.current_element_open.set_visible(false)
@@ -345,7 +346,7 @@
 					end 
 
 					if frame.Parent:IsA("ScreenGui") and frame.Parent.DisplayOrder ~= 999999 then 
-						library.display_orders += 1 -- shit code
+						library.display_orders += 1 
 						frame.Parent.DisplayOrder = library.display_orders
 					end   
 				end
@@ -359,25 +360,11 @@
 
 			library:connection(uis.InputChanged, function(input, game_event) 
 				if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-					local viewport_x = camera.ViewportSize.X
-					local viewport_y = camera.ViewportSize.Y
-
-					local current_position = dim2(
-						0,
-						clamp(
-							start_size.X.Offset + (input.Position.X - start.X),
-							0,
-							viewport_x - frame.Size.X.Offset
-						),
-						0,
-						clamp(
-							start_size.Y.Offset + (input.Position.Y - start.Y),
-							0,
-							viewport_y - frame.Size.Y.Offset
-						)
-					)
-
-					frame.Position = current_position
+					local screenSize = game:GetService("GuiService"):GetScreenSize()
+					local delta = input.Position - startMousePos
+					local newX = math.clamp(startAbsPos.X + delta.X, 0, screenSize.X - frame.AbsoluteSize.X)
+					local newY = math.clamp(startAbsPos.Y + delta.Y, 0, screenSize.Y - frame.AbsoluteSize.Y)
+					frame.Position = UDim2.new(0, newX, 0, newY)
 				end
 			end)
 		end
@@ -730,7 +717,7 @@
 		
 					library:apply_theme(items.UIGradient, "contrast", "Color") 
 					
-					-- MODIFIED: Center the title text
+					-- Centered title text
 					items.text = library:create("TextLabel", {
 						Parent = items.window_holder,
 						Name = "",
@@ -748,7 +735,7 @@
 						BackgroundColor3 = rgb(255, 255, 255)
 					}) library:apply_theme(items.text, "accent", "TextColor3")
 					
-					-- FIXED: Rivals text with right anchor
+					-- "Rivals" text on the right, before the X button
 					items.rivals_text = library:create("TextLabel", {
 						Parent = items.main_holder,
 						Name = "",
