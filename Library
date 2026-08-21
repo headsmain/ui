@@ -116,7 +116,7 @@ getgenv().Library = {
 
     local Themes = {
         Preset = {
-            ["Accent"] = Color3.fromRGB(255, 182, 193),
+            ["Accent"] = Color3.fromRGB(255, 80, 80),
             ["ElementBackground"] = Color3.fromRGB(20, 20, 22),
             ["SectionBackground"] = Color3.fromRGB(15, 16, 18),
             ["ElementOutline"] = Color3.fromRGB(25, 25, 29),
@@ -1050,15 +1050,26 @@ getgenv().Library = {
         writefile(Path, self:GetConfig())
     end
 
+    Library.AutoSave = function(self)
+        self:SaveConfig("autosave")
+    end
+
     Library.AutoLoad = function(self)
         self.Window.Tweening = true
-        local Name = readfile(Library.Directory.."/Autoload.txt")
+
+        local Name = readfile(self.Directory.."/Autoload.txt")
 
         if Name ~= "" then
             for i = 1, 2 do
-                self:LoadConfig(readfile(Library.Directory .. "/Configs/" .. Name .. ".Cfg"))
+                self:LoadConfig(readfile(self.Directory .. "/Configs/" .. Name .. ".Cfg"))
             end
         end
+
+        local AutoSavePath = self.Directory .. "/Configs/autosave.Cfg"
+        if isfile(AutoSavePath) then
+            self:LoadConfig(readfile(AutoSavePath))
+        end
+
         self.Window.Tweening = false
     end
 
