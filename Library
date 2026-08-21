@@ -90,7 +90,6 @@ getgenv().Library = {
     Notifications = {Notifs = {}};
     Keybinds = {};
     Mods = {};
-    Sections = {};
 
     OpenElement = {};
 
@@ -1563,131 +1562,6 @@ getgenv().Library = {
                 BackgroundColor3 = Themes.Preset["Background"]
             }):Themify("Background", "BackgroundColor3");
 
-            do -- Search bar
-                local SearchHolder = Library:Create("TextButton", {
-                    Parent = Items.Topbar.Instance;
-                    AnchorPoint = Vector2.new(1, 0.5);
-                    Position = UDim2.new(1, -15, 0.5, 0);
-                    Size = UDim2.new(0, 95, 0, 30);
-                    BackgroundTransparency = 1;
-                    Text = "";
-                    AutoButtonColor = false;
-                })
-
-                Library:Create("TextLabel", {
-                    Parent = SearchHolder.Instance;
-                    FontFace = Themes.Preset.Font;
-                    Text = utf8.char(128269);
-                    TextColor3 = Themes.Preset["Unselected"];
-                    AutomaticSize = Enum.AutomaticSize.XY;
-                    BackgroundTransparency = 1;
-                    AnchorPoint = Vector2.new(0, 0.5);
-                    Position = UDim2.new(0, 0, 0.5, 0);
-                    BorderSizePixel = 0;
-                    ZIndex = 2;
-                    TextSize = 13;
-                }):Themify("Unselected", "TextColor3")
-
-                Library:Create("TextLabel", {
-                    Parent = SearchHolder.Instance;
-                    FontFace = Themes.Preset.Font;
-                    Text = "Ctrl+F";
-                    TextColor3 = Themes.Preset["Unselected"];
-                    AutomaticSize = Enum.AutomaticSize.XY;
-                    BackgroundTransparency = 1;
-                    AnchorPoint = Vector2.new(0, 0.5);
-                    Position = UDim2.new(0, 20, 0.5, 0);
-                    BorderSizePixel = 0;
-                    ZIndex = 2;
-                    TextSize = 12;
-                }):Themify("Unselected", "TextColor3")
-
-                local SearchBox = Library:Create("TextBox", {
-                    Parent = Items.Menu.Instance;
-                    AnchorPoint = Vector2.new(1, 0);
-                    Position = UDim2.new(1, -15, 0, 76);
-                    Size = UDim2.new(0, 280, 0, 32);
-                    BackgroundColor3 = Themes.Preset["SectionBackground"];
-                    TextColor3 = Themes.Preset["TextColor"];
-                    PlaceholderText = "Search features...";
-                    PlaceholderColor3 = Themes.Preset["Unselected"];
-                    FontFace = Themes.Preset.Font;
-                    TextSize = 13;
-                    Visible = false;
-                    ClearTextOnFocus = false;
-                    BorderSizePixel = 0;
-                    ZIndex = 500;
-                }):Themify("SectionBackground", "BackgroundColor3"):Themify("TextColor", "TextColor3"):Themify("Unselected", "PlaceholderColor3")
-
-                Library:Create("UICorner", {
-                    Parent = SearchBox.Instance;
-                    CornerRadius = UDim.new(0, 6)
-                })
-
-                Library:Create("UIPadding", {
-                    Parent = SearchBox.Instance;
-                    PaddingLeft = UDim.new(0, 10);
-                    PaddingRight = UDim.new(0, 10);
-                })
-
-                local SearchOpen = false
-
-                local function SearchFeatures(query)
-                    query = string.lower(query)
-                    for _, Section in ipairs(Library.Sections) do
-                        local SectionFrame = Section.Items and Section.Items.Section and Section.Items.Section.Instance
-                        if SectionFrame then
-                            local HasMatch = query == ""
-                            if not HasMatch then
-                                for _, Desc in ipairs(SectionFrame:GetDescendants()) do
-                                    if Desc:IsA("TextLabel") and Desc.Text ~= "" then
-                                        if string.lower(Desc.Text):find(query, 1, true) then
-                                            HasMatch = true
-                                            break
-                                        end
-                                    end
-                                end
-                            end
-                            SectionFrame.Visible = HasMatch
-                        end
-                    end
-                end
-
-                local function ToggleSearch()
-                    SearchOpen = not SearchOpen
-                    SearchBox.Instance.Visible = SearchOpen
-                    if SearchOpen then
-                        SearchBox.Instance:CaptureFocus()
-                    else
-                        SearchBox.Instance.Text = ""
-                        SearchFeatures("")
-                    end
-                end
-
-                Items.SearchHolder = SearchHolder
-                Items.SearchBox = SearchBox
-
-                SearchHolder:OnClick(ToggleSearch)
-
-                Library:Connect(SearchBox.Instance:GetPropertyChangedSignal("Text"), function()
-                    SearchFeatures(SearchBox.Instance.Text)
-                end)
-
-                Library:Connect(Services.UserInputService.InputBegan, function(Input, GameProcessed)
-                    if GameProcessed then
-                        return
-                    end
-
-                    if Input.KeyCode == Enum.KeyCode.F and Services.UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
-                        ToggleSearch()
-                    end
-
-                    if Input.KeyCode == Enum.KeyCode.Escape and SearchOpen then
-                        ToggleSearch()
-                    end
-                end)
-            end
-
                         -- // keybind list top
             Items.KeybindList = Library:Create("Frame",{ZIndex = 999; Parent = Library.HUD.Instance; Size = UDim2.new(0, 200, 0, 31); Position = UDim2.new(0, 37, 0, 401); BorderSizePixel = 0; ZIndex = 2; BackgroundColor3 = Color3.fromRGB(20, 20, 22)})
             Items.UIStroke = Library:Create("UIStroke",{Color = Color3.fromRGB(23, 24, 27); Parent = Items.KeybindList.Instance})
@@ -2389,8 +2263,6 @@ getgenv().Library = {
                 end
             end)
         end
-
-        table.insert(Library.Sections, Cfg)
 
         return setmetatable(Cfg, Library)
     end
